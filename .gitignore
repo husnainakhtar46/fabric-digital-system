@@ -16,7 +16,7 @@ env/
 # PyInstaller
 build/
 dist/
-*.spec
+# Note: buildozer.spec is needed for Android builds
 
 # QR Codes (generated files)
 *_QR.png
