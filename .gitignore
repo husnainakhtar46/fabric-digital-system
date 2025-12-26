@@ -1,0 +1,48 @@
+# Credentials - NEVER commit these!
+credentials.json
+*.json.bak
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# QR Codes (generated files)
+*_QR.png
+
+# Buildozer
+.buildozer/
+bin/
+*.apk
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Test files
+test_*.py
+check_*.py
+init_*.py
+fix_*.py
+debug_*.py
+quick_*.py
+*_results.txt
+quota_*.txt
