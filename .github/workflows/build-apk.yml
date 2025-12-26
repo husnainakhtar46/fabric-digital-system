@@ -24,10 +24,17 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y openjdk-17-jdk autoconf libtool
     
+    - name: Accept Android SDK Licenses
+      run: |
+        mkdir -p ~/.android
+        echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" > ~/.android/repositories.cfg
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+    
     - name: Build APK
       run: |
         cd mobile_app
-        buildozer android debug
+        export ANDROIDSDK=$ANDROID_HOME
+        yes | buildozer android debug
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
