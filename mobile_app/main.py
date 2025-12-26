@@ -4,8 +4,9 @@ import cv2
 from threading import Thread
 from datetime import datetime
 
-# Add project root
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Backend imports (backend folder is now in mobile_app for Android)
+from backend.google_services import GoogleServices
+from backend.data_models import FabricSpec
 
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -22,10 +23,6 @@ from kivy.core.window import Window
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.lang import Builder
 from kivy.loader import Loader
-
-# Setup Backend services
-from backend.google_services import GoogleServices
-from backend.data_models import FabricSpec
 
 # Kivy String Builder for Styling
 KV = '''
