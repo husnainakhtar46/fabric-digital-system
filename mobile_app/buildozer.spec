@@ -19,8 +19,8 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 1.0
 
 # (list) Application requirements
-# comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy,gspread,google-auth,pillow
+# Only packages with python-for-android recipes
+requirements = python3,kivy,pillow,requests,certifi
 
 # (str) Supported orientation (landscape, sensorLandscape, portrait or all)
 orientation = portrait
