@@ -1,7 +1,11 @@
 flask
-flask-cors
+flask-login
+python-dotenv
 gspread
-google-auth
+oauth2client
 google-api-python-client
-pillow
-qrcode[pil]
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+qrcode
+Pillow
