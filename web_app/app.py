@@ -1,10 +1,14 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, send_file, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from functools import wraps
+from dotenv import load_dotenv
 import os
 import sys
 import io
 import qrcode
+
+# Load environment variables from .env file
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 # Ensure backend folder is in python path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -13,17 +17,17 @@ from backend.google_services import GoogleServices
 from backend.data_models import FabricSpec
 
 app = Flask(__name__)
-app.secret_key = 'fabric-library-secret-key-2024'  # Change in production
+app.secret_key = os.getenv('SECRET_KEY', 'fallback-secret-key')
 
 # Flask-Login setup
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# Simple user store (can be replaced with database)
+# User credentials from environment variables
 USERS = {
-    'user': {'password': 'user123', 'role': 'user'},
-    'customer': {'password': 'scan123', 'role': 'customer'}
+    os.getenv('ADMIN_USERNAME', 'admin'): {'password': os.getenv('ADMIN_PASSWORD', 'admin'), 'role': 'user'},
+    os.getenv('CUSTOMER_USERNAME', 'customer'): {'password': os.getenv('CUSTOMER_PASSWORD', 'customer'), 'role': 'customer'}
 }
 
 class User(UserMixin):

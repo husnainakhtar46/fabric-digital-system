@@ -1,30 +1,21 @@
-# Credentials - NEVER commit these!
+# Credentials & Secrets - NEVER commit these!
 credentials.json
-*.json.bak
+.env
 
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
 .venv/
 venv/
 ENV/
 env/
 
-# PyInstaller
+# Build outputs
 build/
 dist/
-# Note: buildozer.spec is needed for Android builds
-
-# QR Codes (generated files)
-*_QR.png
-
-# Buildozer
-.buildozer/
-bin/
-*.apk
+*.spec
 
 # IDE
 .vscode/
@@ -37,12 +28,5 @@ bin/
 Thumbs.db
 *.log
 
-# Test files
-test_*.py
-check_*.py
-init_*.py
-fix_*.py
-debug_*.py
-quick_*.py
-*_results.txt
-quota_*.txt
+# Legacy folder (old code backup)
+legacy/
