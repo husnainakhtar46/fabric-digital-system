@@ -24,8 +24,7 @@ except ImportError:
     GoogleSheetsClient = None
 
 # Your Google Sheet ID (from the sheet URL)
-# Example: https://docs.google.com/spreadsheets/d/THIS_IS_THE_ID/edit
-SHEET_ID = "YOUR_SHEET_ID_HERE"
+SHEET_ID = "1QBHM2ybTvgZFRjduFdxZnOu4dR4p_xBKdR6LE5fNJT4"
 
 # Kivy UI Definition
 KV = '''
