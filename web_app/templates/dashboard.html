@@ -1,0 +1,381 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Fabric List</h2>
+        <div class="flex space-x-3">
+            <input type="text" id="searchInput" placeholder="Search Fabric Code..."
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md px-4 py-2">
+        </div>
+    </div>
+
+
+    <!-- Add Fabric Modal -->
+    <div id="addFabricModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div
+                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Add New Fabric</h3>
+                            <div class="mt-2">
+                                <form id="addFabricForm" class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+                                    <div class="col-span-1">
+                                        <label for="fabric_code" class="block text-sm font-medium text-gray-700">Fabric
+                                            Code *</label>
+                                        <input type="text" name="fabric_code" id="fabric_code" required
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="supplier"
+                                            class="block text-sm font-medium text-gray-700">Supplier</label>
+                                        <input type="text" name="supplier" id="supplier"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="category"
+                                            class="block text-sm font-medium text-gray-700">Category</label>
+                                        <input type="text" name="category" id="category"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+
+                                    <div class="col-span-2">
+                                        <label for="composition"
+                                            class="block text-sm font-medium text-gray-700">Composition</label>
+                                        <input type="text" name="composition" id="composition"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="moq" class="block text-sm font-medium text-gray-700">MoQ</label>
+                                        <input type="text" name="moq" id="moq"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="shade" class="block text-sm font-medium text-gray-700">Shade</label>
+                                        <input type="text" name="shade" id="shade"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="weight" class="block text-sm font-medium text-gray-700">Weight
+                                            (BW_Weight)</label>
+                                        <input type="text" name="weight" id="weight"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="finish"
+                                            class="block text-sm font-medium text-gray-700">Finish</label>
+                                        <input type="text" name="finish" id="finish"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="width" class="block text-sm font-medium text-gray-700">Width</label>
+                                        <input type="text" name="width" id="width"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="weave" class="block text-sm font-medium text-gray-700">Weave</label>
+                                        <input type="text" name="weave" id="weave"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="warp_shrink" class="block text-sm font-medium text-gray-700">Warp
+                                            Shrink</label>
+                                        <input type="text" name="warp_shrink" id="warp_shrink"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="weft_shrink" class="block text-sm font-medium text-gray-700">Weft
+                                            Shrink</label>
+                                        <input type="text" name="weft_shrink" id="weft_shrink"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="stretch"
+                                            class="block text-sm font-medium text-gray-700">Stretch</label>
+                                        <input type="text" name="stretch" id="stretch"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label for="growth"
+                                            class="block text-sm font-medium text-gray-700">Growth</label>
+                                        <input type="text" name="growth" id="growth"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" onclick="submitAddFabric()"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Add
+                    </button>
+                    <button type="button" onclick="closeModal()"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fabric Table -->
+    <div class="flex flex-col mt-6">
+        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200" id="fabricTable">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Code</th>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Supplier</th>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    MoQ</th>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Category</th>
+
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Composition</th>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Shade</th>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Weight</th>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Finish</th>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Width</th>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Shrink</th>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Weave</th>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Stretch</th>
+                                <th scope="col"
+                                    class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Growth</th>
+                                <th scope="col" class="px-3 py-3 text-relative">
+                                    <span class="sr-only">Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="tableBody">
+                            <tr>
+                                <td colspan="15" class="px-6 py-4 text-center text-sm text-gray-500">Loading data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination Controls -->
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <button onclick="prevPage()"
+                            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</button>
+                        <button onclick="nextPage()"
+                            class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</button>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Showing <span id="showingStart" class="font-medium">1</span> to <span id="showingEnd"
+                                    class="font-medium">10</span> of <span id="totalItems" class="font-medium">0</span>
+                                results
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                                aria-label="Pagination">
+                                <button onclick="prevPage()"
+                                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">&larr;
+                                    Prev</button>
+                                <span id="pageInfo"
+                                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">Page
+                                    1</span>
+                                <button onclick="nextPage()"
+                                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">Next
+                                    &rarr;</button>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let allFabrics = [];
+    let filteredFabrics = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("Fetching fabrics...");
+        fetch('/api/fabrics')
+            .then(response => response.json())
+            .then(data => {
+                allFabrics = data;
+                filteredFabrics = data;
+                renderTable();
+            })
+            .catch(err => {
+                console.error('Error fetching fabrics:', err);
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="15" class="px-6 py-4 text-center text-red-500">Failed to load data.</td></tr>`;
+            });
+
+        // Modal Logic
+        const modal = document.getElementById('addFabricModal');
+        const btn = document.getElementById('addFabricBtn');
+
+        if (btn) {
+            btn.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+            });
+        }
+
+        // Search Logic
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const query = this.value.toLowerCase();
+                filteredFabrics = allFabrics.filter(f =>
+                    (f.Fabric_Code && f.Fabric_Code.toLowerCase().includes(query)) ||
+                    (f.Supplier && f.Supplier.toLowerCase().includes(query)) ||
+                    (f.Category && f.Category.toLowerCase().includes(query))
+                );
+                currentPage = 1;
+                renderTable();
+            });
+        }
+    });
+
+    function closeModal() {
+        document.getElementById('addFabricModal').classList.add('hidden');
+    }
+
+    function submitAddFabric() {
+        const formData = {
+            fabric_code: document.getElementById('fabric_code').value,
+            supplier: document.getElementById('supplier').value,
+            category: document.getElementById('category').value,
+            composition: document.getElementById('composition').value,
+            moq: document.getElementById('moq').value,
+            shade: document.getElementById('shade').value,
+            weight: document.getElementById('weight').value,
+            finish: document.getElementById('finish').value,
+            width: document.getElementById('width').value,
+            warp_shrink: document.getElementById('warp_shrink').value,
+            weft_shrink: document.getElementById('weft_shrink').value,
+            weave: document.getElementById('weave').value,
+            stretch: document.getElementById('stretch').value,
+            growth: document.getElementById('growth').value
+        };
+
+        fetch('/api/add_fabric', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert("Error: " + data.error);
+                } else {
+                    alert("Fabric Added Successfully!");
+                    closeModal();
+                    location.reload(); // Reload to see new data
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert("Failed to add fabric.");
+            });
+    }
+
+    function renderTable() {
+        const tableBody = document.getElementById('tableBody');
+        tableBody.innerHTML = '';
+
+        const totalItems = filteredFabrics.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = Math.min(start + itemsPerPage, totalItems);
+        const pageData = filteredFabrics.slice(start, end);
+
+        document.getElementById('showingStart').textContent = totalItems > 0 ? start + 1 : 0;
+        document.getElementById('showingEnd').textContent = end;
+        document.getElementById('totalItems').textContent = totalItems;
+        document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages || 1}`;
+
+        if (totalItems === 0) {
+            tableBody.innerHTML = `<tr><td colspan="14" class="px-6 py-4 text-center text-gray-500">No fabrics found.</td></tr>`;
+            return;
+        }
+
+        pageData.forEach(fabric => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                    <td class="px-3 py-4 whitespace-nowrap text-xs font-medium text-indigo-600">${fabric.Fabric_Code || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-900">${fabric.Supplier || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500">${fabric.MoQ || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500">${fabric.Category || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500">${fabric.Composition || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500">${fabric.Shade || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500">${fabric.BW_Weight || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500">${fabric.Finish || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500">${fabric.Width || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500">${fabric.Warp_Shrink || ''}/${fabric.Weft_Shrink || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500">${fabric.Weave || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500">${fabric.Stretch || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500">${fabric.Growth || ''}</td>
+                    <td class="px-3 py-4 whitespace-nowrap text-right text-xs font-medium">
+                        <button onclick="generateQR('${fabric.Fabric_Code}')" class="text-gray-600 hover:text-gray-900">QR</button>
+                    </td>
+                `;
+            tableBody.appendChild(tr);
+        });
+    }
+
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+        }
+    }
+
+    function nextPage() {
+        const totalPages = Math.ceil(filteredFabrics.length / itemsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+        }
+    }
+
+    function generateQR(code) {
+        // Trigger download by navigating to the QR API endpoint
+        window.location.href = `/api/qr/${encodeURIComponent(code)}`;
+    }
+</script>
+{% endblock %}

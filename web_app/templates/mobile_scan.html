@@ -1,0 +1,268 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="px-4 py-6">
+    <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-900">Mobile Scanner</h2>
+        <p class="text-gray-500 text-sm">Scan a Fabric QR Code or Search manually.</p>
+    </div>
+
+    <!-- Scanner Container -->
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+        <div id="reader" width="600px" class="bg-black"></div>
+        <div class="p-4">
+            <div id="scanResult" class="hidden">
+                <h3 class="text-lg font-medium text-green-600">Scan Successful!</h3>
+                <p class="text-gray-600 mt-2">Fabric Code: <span id="resultCode" class="font-bold"></span></p>
+                <div id="fabricDetails" class="mt-4 p-4 bg-gray-50 rounded text-left text-sm">
+                    <!-- Details will be injected here -->
+                    Loading details...
+                </div>
+                <button onclick="startScanning()"
+                    class="mt-4 w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">Scan
+                    Another</button>
+            </div>
+
+            <div id="scanControl">
+                <button onclick="startScanning()"
+                    class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 mb-2">Start
+                    Camera</button>
+                <div class="relative mt-4">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center">
+                        <span class="px-2 bg-white text-sm text-gray-500">Or search</span>
+                    </div>
+                </div>
+                <div class="mt-4 flex relative">
+                    <input type="text" id="manualInput" placeholder="Enter Fabric Code" autocomplete="off"
+                        class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-l-md px-4 py-2">
+                    <button onclick="manualSearch()"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200">
+                        Go
+                    </button>
+                </div>
+                <!-- Suggestions Dropdown -->
+                <div id="suggestions"
+                    class="mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto hidden">
+                    <!-- Suggestions will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+    let html5QrcodeScanner;
+    let allFabricCodes = []; // Store all fabric codes for suggestions
+
+    // Fetch fabric codes on load for autocomplete
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('/api/fabrics')
+            .then(res => res.json())
+            .then(data => {
+                allFabricCodes = data.map(f => ({
+                    code: f.Fabric_Code || '',
+                    supplier: f.Supplier || ''
+                }));
+            })
+            .catch(err => console.error('Failed to load fabrics for autocomplete:', err));
+
+        // Add input listener for suggestions
+        const input = document.getElementById('manualInput');
+        input.addEventListener('input', showSuggestions);
+        input.addEventListener('focus', showSuggestions);
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('#manualInput') && !e.target.closest('#suggestions')) {
+                document.getElementById('suggestions').classList.add('hidden');
+            }
+        });
+    });
+
+    // Simple fuzzy matching function
+    function fuzzyMatch(query, target) {
+        if (!query || !target) return 0;
+        query = query.toLowerCase();
+        target = target.toLowerCase();
+
+        // Exact match
+        if (target === query) return 100;
+
+        // Contains match
+        if (target.includes(query)) return 80;
+
+        // Start match
+        if (target.startsWith(query)) return 90;
+
+        // Calculate similarity score (Levenshtein-like approach simplified)
+        let matches = 0;
+        let queryIndex = 0;
+        for (let i = 0; i < target.length && queryIndex < query.length; i++) {
+            if (target[i] === query[queryIndex]) {
+                matches++;
+                queryIndex++;
+            }
+        }
+
+        return Math.floor((matches / query.length) * 60);
+    }
+
+    function showSuggestions() {
+        const input = document.getElementById('manualInput');
+        const suggestionsDiv = document.getElementById('suggestions');
+        const query = input.value.trim();
+
+        if (query.length < 1) {
+            suggestionsDiv.classList.add('hidden');
+            return;
+        }
+
+        // Filter and sort by relevance
+        const matches = allFabricCodes
+            .map(item => ({
+                ...item,
+                score: Math.max(fuzzyMatch(query, item.code), fuzzyMatch(query, item.supplier) * 0.5)
+            }))
+            .filter(item => item.score > 30)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 8); // Limit to 8 suggestions
+
+        if (matches.length === 0) {
+            suggestionsDiv.classList.add('hidden');
+            return;
+        }
+
+        suggestionsDiv.innerHTML = matches.map(item => `
+            <div class="px-4 py-2 hover:bg-indigo-50 cursor-pointer border-b border-gray-100 last:border-0" 
+                 onclick="selectSuggestion('${item.code}')">
+                <span class="font-medium text-indigo-600">${item.code}</span>
+                <span class="text-gray-400 text-xs ml-2">${item.supplier}</span>
+            </div>
+        `).join('');
+
+        suggestionsDiv.classList.remove('hidden');
+    }
+
+    function selectSuggestion(code) {
+        document.getElementById('manualInput').value = code;
+        document.getElementById('suggestions').classList.add('hidden');
+        manualSearch();
+    }
+
+    function onScanSuccess(decodedText, decodedResult) {
+        // Handle the scanned code as you like, for example:
+        console.log(`Code matched = ${decodedText}`, decodedResult);
+
+        // Stop scanning
+        html5QrcodeScanner.clear().catch(error => {
+            console.error("Failed to clear html5QrcodeScanner. ", error);
+        });
+
+        // Show result
+        document.getElementById('scanControl').classList.add('hidden');
+        document.getElementById('scanResult').classList.remove('hidden');
+        document.getElementById('resultCode').innerText = decodedText;
+
+        fetchFabricDetails(decodedText);
+    }
+
+    function startScanning() {
+        document.getElementById('scanResult').classList.add('hidden');
+        document.getElementById('scanControl').classList.remove('hidden');
+
+        // This method will trigger user permissions
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+
+        // Hide the start button while scanning (the library handles UI mostly, but we might want to hide our button)
+        // For now, let's just let the library take over the 'reader' div
+    }
+
+    function manualSearch() {
+        const code = document.getElementById('manualInput').value;
+        if (code) {
+            document.getElementById('suggestions').classList.add('hidden');
+            document.getElementById('scanControl').classList.add('hidden');
+            document.getElementById('scanResult').classList.remove('hidden');
+            document.getElementById('resultCode').innerText = code;
+            fetchFabricDetails(code);
+        }
+    }
+
+    function fetchFabricDetails(code) {
+        const detailsDiv = document.getElementById('fabricDetails');
+        detailsDiv.innerHTML = "Fetching info...";
+
+        // Fetch from API (We need an endpoint that filters by ID, or we filter client side from the big list)
+        // Ideally: /api/fabrics/<code_id>
+        // But for now, we'll iterate the full list or assume we add a specific route later.
+
+        fetch('/api/fabrics')
+            .then(res => res.json())
+            .then(data => {
+                // Case-insensitive and trim matching
+                const fabric = data.find(f =>
+                    f.Fabric_Code && f.Fabric_Code.toLowerCase().trim() === code.toLowerCase().trim()
+                );
+                if (fabric) {
+                    detailsDiv.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500">Supplier</span>
+                            <span class="font-medium text-gray-900">${fabric.Supplier}</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500">Category</span>
+                            <span class="font-medium text-gray-900">${fabric.Category}</span>
+                        </div>
+
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500">MoQ</span>
+                            <span class="font-medium text-gray-900">${fabric.MoQ}</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500">Composition</span>
+                            <span class="font-medium text-gray-900 text-right">${fabric.Composition}</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500">Weight</span>
+                            <span class="font-medium text-gray-900">${fabric.BW_Weight}</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500">Shade</span>
+                            <span class="font-medium text-gray-900">${fabric.Shade}</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500">Finish</span>
+                            <span class="font-medium text-gray-900">${fabric.Finish}</span>
+                        </div>
+                         <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500">Width</span>
+                            <span class="font-medium text-gray-900">${fabric.Width}</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500">Weave</span>
+                            <span class="font-medium text-gray-900">${fabric.Weave}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Shrinkage (W/W)</span>
+                            <span class="font-medium text-gray-900">${fabric.Warp_Shrink} / ${fabric.Weft_Shrink}</span>
+                        </div>
+                         <div class="flex justify-between">
+                            <span class="text-gray-500">Elast (S/G)</span>
+                            <span class="font-medium text-gray-900">${fabric.Stretch} / ${fabric.Growth}</span>
+                        </div>
+                    </div>
+                `;
+                } else {
+                    detailsDiv.innerHTML = `<p class="text-red-500">Fabric not found in database.</p>`;
+                }
+            });
+    }
+</script>
+{% endblock %}

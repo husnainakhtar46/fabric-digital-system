@@ -12,7 +12,7 @@ class FabricSpec:
     # General
     moq: Optional[str] = ""
     category: Optional[str] = ""
-    status: Optional[str] = ""
+
     
     # Specs
     composition: Optional[str] = ""
@@ -44,7 +44,7 @@ class FabricSpec:
         return [
             self.fabric_code,
             self.supplier,
-            self.moq, self.category, self.status,
+            self.moq, self.category,
             self.composition, self.shade,
             self.weight, self.finish, self.width,
             self.warp_shrink, self.weft_shrink,
