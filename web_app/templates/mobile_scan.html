@@ -176,7 +176,14 @@
 
         // This method will trigger user permissions
         html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", { fps: 10, qrbox: 250 });
+            "reader", {
+            fps: 10,
+            qrbox: 250,
+            // Use back camera (environment) by default instead of front camera
+            videoConstraints: {
+                facingMode: { exact: "environment" }
+            }
+        });
         html5QrcodeScanner.render(onScanSuccess);
 
         // Hide the start button while scanning (the library handles UI mostly, but we might want to hide our button)
